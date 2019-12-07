@@ -49,7 +49,7 @@ struct ContentView: View {
                     Text("Info")
             }.tag(4)
         }
-        .font(.headline).accentColor(Color.blue)
+        .font(.headline).accentColor(Color.red)
          .statusBar(hidden: true).edgesIgnoringSafeArea(.top)
     }
 }

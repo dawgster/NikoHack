@@ -13,12 +13,17 @@ struct HomeView: View {
         ScrollView{
                VStack {
                    MapView()
-                       .frame(height:300)
+                       .frame(height:600)
                        .edgesIgnoringSafeArea(.top)
-                   
+               
+                HStack{
+                    Spacer()
+                     //Image("impacd-logo-transparent").scaleEffect(0.2)
+                    Image(systemName: "cube.box.fill").scaleEffect(3.0).foregroundColor(Color.red)
+                    Spacer()
                    VStack(alignment: .leading) {
                        
-                       Text("VicinityBox 103")
+                       Text("Packstack 103")
                            .font(.title)
                        
                            Text("Eckstraße 2")
@@ -30,7 +35,8 @@ struct HomeView: View {
                        
                    .padding()
                    Spacer()
-                   }
+                }
+            }
                }.edgesIgnoringSafeArea(.top)
                .statusBar(hidden: true)
                
