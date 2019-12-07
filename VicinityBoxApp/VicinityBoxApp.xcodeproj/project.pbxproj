@@ -13,6 +13,11 @@
 		707F8427239B1A3E0017E22D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 707F8426239B1A3E0017E22D /* Assets.xcassets */; };
 		707F842A239B1A3E0017E22D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 707F8429239B1A3E0017E22D /* Preview Assets.xcassets */; };
 		707F842D239B1A3E0017E22D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 707F842B239B1A3E0017E22D /* LaunchScreen.storyboard */; };
+		707F8436239B1C7E0017E22D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707F8435239B1C7E0017E22D /* HomeView.swift */; };
+		707F8438239B1D5D0017E22D /* PickUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707F8437239B1D5D0017E22D /* PickUpView.swift */; };
+		707F843A239B1D950017E22D /* DeliverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707F8439239B1D950017E22D /* DeliverView.swift */; };
+		707F843C239B1DB60017E22D /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707F843B239B1DB60017E22D /* InfoView.swift */; };
+		707F843E239B1FB20017E22D /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707F843D239B1FB20017E22D /* MapView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,11 @@
 		707F8429239B1A3E0017E22D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		707F842C239B1A3E0017E22D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		707F842E239B1A3E0017E22D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		707F8435239B1C7E0017E22D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		707F8437239B1D5D0017E22D /* PickUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickUpView.swift; sourceTree = "<group>"; };
+		707F8439239B1D950017E22D /* DeliverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliverView.swift; sourceTree = "<group>"; };
+		707F843B239B1DB60017E22D /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		707F843D239B1FB20017E22D /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,9 +66,10 @@
 		707F841F239B1A3B0017E22D /* VicinityBoxApp */ = {
 			isa = PBXGroup;
 			children = (
+				707F8434239B1C670017E22D /* Views */,
+				707F8424239B1A3B0017E22D /* ContentView.swift */,
 				707F8420239B1A3B0017E22D /* AppDelegate.swift */,
 				707F8422239B1A3B0017E22D /* SceneDelegate.swift */,
-				707F8424239B1A3B0017E22D /* ContentView.swift */,
 				707F8426239B1A3E0017E22D /* Assets.xcassets */,
 				707F842B239B1A3E0017E22D /* LaunchScreen.storyboard */,
 				707F842E239B1A3E0017E22D /* Info.plist */,
@@ -73,6 +84,18 @@
 				707F8429239B1A3E0017E22D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		707F8434239B1C670017E22D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				707F843D239B1FB20017E22D /* MapView.swift */,
+				707F8435239B1C7E0017E22D /* HomeView.swift */,
+				707F8437239B1D5D0017E22D /* PickUpView.swift */,
+				707F8439239B1D950017E22D /* DeliverView.swift */,
+				707F843B239B1DB60017E22D /* InfoView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,8 +170,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				707F8421239B1A3B0017E22D /* AppDelegate.swift in Sources */,
+				707F843E239B1FB20017E22D /* MapView.swift in Sources */,
+				707F8436239B1C7E0017E22D /* HomeView.swift in Sources */,
 				707F8423239B1A3B0017E22D /* SceneDelegate.swift in Sources */,
+				707F8438239B1D5D0017E22D /* PickUpView.swift in Sources */,
+				707F843A239B1D950017E22D /* DeliverView.swift in Sources */,
 				707F8425239B1A3B0017E22D /* ContentView.swift in Sources */,
+				707F843C239B1DB60017E22D /* InfoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
