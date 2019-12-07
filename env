@@ -1,0 +1,4 @@
+raspi_ip="131.246.255.7"
+
+# Define the object ID of the bulb.
+object_id_bulb="813610af-d8f4-433a-bb4d-42e7705e1707"

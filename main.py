@@ -5,6 +5,9 @@ import numpy as np
 import smbus
 import math
 
+from bulb import set_bulb_color, bulb_set_disabled_status, bulb_set_parcel_status, bulb_set_security_status
+
+sec_sensor_status = False
 
 def read_byte(reg):
     return bus.read_byte_data(address, reg)
@@ -40,38 +43,43 @@ def get_x_rotation(x, y, z):
 
 
 def poll_door_sensor():
-    GPIO.output(5, GPIO.LOW)
+    GPIO.output(6, GPIO.LOW)
+    time.sleep(0.00001)
+
     start = time.time()
-
-    while GPIO.input(6) == GPIO.HIGH:
-        now = time.time()
-        if now - start > 0.2:
-            GPIO.output(5, GPIO.HIGH)
-            return True
-
     stop = time.time()
 
-    time_diff = stop-start
-    dist = (340 * time_diff)/2.0 #340 assumed as speed of sound, gives dist in meters
+    while GPIO.input(12) == 0:
+        start = time.time()
 
-    if dist > 0.1:
-        GPIO.output(5, GPIO.HIGH)
+
+    while GPIO.input(12) == 1:
+        stop = time.time()
+
+    time_diff = stop-start
+    dist = (34300 * time_diff)/2.0 #340 assumed as speed of sound, gives dist in meters
+    #print(dist)
+    if dist > 30:
+        GPIO.output(6, GPIO.HIGH)
         return True
 
-    GPIO.output(5, GPIO.HIGH)
+    GPIO.output(6, GPIO.HIGH)
     return False
 
 
 
 def poll_parcel_sensor(sensor_handle):
 
-     measurments = sensor_handle.get_raw_data(num_measures=3)
-     avg_measurment = np.mean(measurments)
+     print("reading weight")
+     measurments = sensor_handle.get_raw_data_mean(5)
+     avg_measurment = measurments
 
      scaling_factor = 1.0
      offset = 0.0
 
      weight = scaling_factor * avg_measurment + offset
+
+     print(weight)
 
      if weight > 0.5:
          return True
@@ -88,35 +96,135 @@ def poll_security_sensor():
     accel_yout_scaled = accel_yout / 16384.0
     accel_zout_scaled = accel_zout / 16384.0
 
-    accel_vec = np.array([accel_xout_scaled, accel_yout_scaled, accel_zout_scaled]).reshape((3,1))/9.81
+    accel_vec = np.array([accel_xout_scaled, accel_yout_scaled, accel_zout_scaled]).reshape((3,1))
+    norm = np.linalg.norm(accel_vec)
+    print(norm)
+    return norm > 1.1 or norm < 0.75
 
-    return np.linalg.norm(accel_vec) > 1.5
+def vicinity_put_parcel_status(status):
 
-def vicinity_put_parcel_status():
-    pass
+    bulb_set_parcel_status() if status else bulb_set_disabled_status()
 
-def vicinity_put_security_status():
-    pass
+def vicinity_put_security_status(status):
 
-if __name__ == "main":
+    bulb_set_security_status() if status else bulb_set_disabled_status()
 
-    GPIO.setmode(GPIO.BOARD)
+def wait_for_authorization_state():
+    global sec_sensor_status
+    door_sensor_status = poll_door_sensor()
+    sec_sensor_status = poll_security_sensor() if  not sec_sensor_status else True
+
+    print("wait for authorized_state")
+
+    if door_sensor_status or sec_sensor_status:
+        vicinity_put_security_status(True)
+
+    if not sec_sensor_status:
+        vicinity_put_parcel_status(False)
+
+    if GPIO.input(24) == 1:
+        print("autorized")
+        return "authorized_state"
+
+    return "wait_for_authorization_state"
+
+
+def authorized_state():
+
+    global sec_sensor_status
+    door_sensor_status = poll_door_sensor()
+    sec_sensor_status = poll_security_sensor() if not sec_sensor_status else True
+    print("authorized_state")
+    GPIO.output(16, GPIO.LOW)
+    if sec_sensor_status:
+        vicinity_put_security_status(True)
+
+    if not sec_sensor_status:
+        vicinity_put_parcel_status(False)
+
+    if door_sensor_status == True:
+        return "wait_for_package_state"
+
+    return "authorized_state"
+
+
+def wait_for_package_state():
+
+    global sec_sensor_status
+    door_sensor_status = poll_door_sensor()
+    sec_sensor_status = poll_security_sensor() if not sec_sensor_status else True
+
+    print("wait_for_package_state")
+
+    GPIO.output(16, GPIO.HIGH)
+    print(GPIO.input(16))
+    if sec_sensor_status:
+        vicinity_put_security_status(True)
+
+    if not sec_sensor_status:
+        vicinity_put_parcel_status(False)
+
+    if door_sensor_status == False:
+        time.sleep(0.5)
+        return "occupied_state"
+
+    return "wait_for_package_state"
+
+def occupied_state():
+
+    global sec_sensor_status
+    #door_sensor_status = poll_door_sensor()
+    sec_sensor_status = poll_security_sensor() if not sec_sensor_status else True
+
+    GPIO.output(16, GPIO.LOW)
+
+    print("occupied state")
+
+    if sec_sensor_status:
+        print("Security breach")
+
+    if sec_sensor_status:
+        vicinity_put_security_status(True)
+
+    if not sec_sensor_status:
+        vicinity_put_parcel_status(True)
+
+    return "occupied_state"
+
+
+
+state_machine = {"wait_for_authorization_state": wait_for_authorization_state,
+                 "authorized_state": authorized_state,
+                 "wait_for_package_state": wait_for_package_state,
+                 "occupied_state": occupied_state}
+
+if __name__ == "__main__":
+
+    GPIO.setmode(GPIO.BCM)
+    GPIO.cleanup()
 
     #door sensor init
-    GPIO.setup(5, GPIO.OUT)
-    GPIO.setup(6, GPIO.IN)
-    GPIO.output(5, GPIO.HIGH)
+    GPIO.setup(6, GPIO.OUT)
+    GPIO.setup(12, GPIO.IN)
+    GPIO.output(6, GPIO.HIGH)
 
+    #RFID
+    GPIO.setup(24, GPIO.IN)
+
+    #Kühlschrank Light
+    GPIO.setup(16, GPIO.OUT)
+    GPIO.output(16, GPIO.LOW)
+    #GPIO.output(16, GPIO.HIGH)
+
+    print("initializing")
     #parcel sensor init
-    hx711 = HX711(
-        dout_pin=7,
-        pd_sck_pin=8,
-        channel='A',
-        gain=64
-    )
-
-    hx711.reset()
-
+    #hx711 = HX711(
+    #    dout_pin=22,
+    #    pd_sck_pin=23
+    #)
+    print("resetting")
+    #hx711.reset()
+    print("hx711 initialized")
     #Security sensor init
     power_mgmt_1 = 0x6b
     power_mgmt_2 = 0x6c
@@ -126,10 +234,11 @@ if __name__ == "main":
 
     # Aktivieren, um das Modul ansprechen zu koennen
     bus.write_byte_data(address, power_mgmt_1, 0)
-
-
+    bulb_set_disabled_status()
+    state = "wait_for_authorization_state"
     while True:
 
-        door_sensor_status = poll_door_sensor()
-        parcel_sensor_status = poll_parcel_sensor()
-        sec_sensor_status = poll_security_sensor()
+        state_function = state_machine[state]
+        state = state_function()
+
+
