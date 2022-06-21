@@ -5,6 +5,6 @@ python-dotenv==0.10.3
 requests==2.22.0
 urllib3==1.25.7
 HX711==1.1.2.3
-numpy==1.17.4
+numpy==1.22.0
 smbus==1.1.post2
 RPi.GPIO==0.7.0
